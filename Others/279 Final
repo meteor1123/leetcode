@@ -1,0 +1,390 @@
+	1.1 Merge Sort:
+	Merge(A,p,q,r){  // p,q,r数组下标，满足 p<=q<=r, 
+		n1 = q - p + 1:
+		n2 = r - q ;
+		for ( i = 1 to n1){
+			L[i] = A[p + i -1]
+		}
+		for ( j =1 to n2){
+			R[j] = A[q + j]
+		}
+		L[n1 + 1] = max_value
+		R[n2 + 1] = max_value
+
+		i = 1
+		j = 1
+		for ( k = p to r){
+			if L[i] <= R[j]
+				A[k] = L[i]
+				i = i + 1;
+			else A[k] = R[j]
+				j = j + 1;
+		}	
+	}
+
+	MERGER-SORT(A, p , r){
+		if p < r{
+			q = (p+r)/2
+			MERGER-SORT(A, p ,q)
+			MERGER-SORT(A, q+1 ,r)
+			MERGER(A, p ,q, r)
+		}
+	}
+
+	1.2 Quick Sort
+
+	QuickSort(A, p ,r){
+		if p < r
+			q = partition( A, p ,r)
+			QuickSort(A, p ,q-1)
+			QuickSort(A, q+1, r)
+	}
+	partition(A, p , r){
+		x = A[r]// pivot选最右
+		i = p - 1
+		for (j = p to r - 1){
+			if A[j] <= x
+				i = i + 1
+				swap(A[j],A[i])
+		}
+		swap(A[i+1], A[r])
+		return i + 1;
+	}
+
+	1.3 Quick select (A[left..right],k){
+		//assume 1<= k <=right - left + 1
+		if(left == right)//base case
+			return A[left]
+		p = partition (A[left...right])
+		pivot_rank = p - left + 1
+		switch(camp(pivot_rank,k))
+			case 0 : return A[p]
+			case 1 : return quick_select(A[left, p-1],k);//pivot_rank比k小
+			case -1: return quick_select(A[p+1,right],k-pivot_rank);//pivot_rank比k大
+	}
+
+	1.4 linear_selcet(A[left...right],k)//线性时间选择算法，找第k小
+	step1: 将input的n个元素划分为n/5组（取下取整），每组5个元素，最多只有一组由剩下的n mod 5组成.
+	step2: 寻找 n/5(往上取整)组中每组的中位数，使用插入排序(selection sort),
+		   时间复杂度为5*(5-1)/2*(n/5) = 2n
+    step3: 对step2重的 n/5 个中位数递归调用linear_selcet找出其中位数mm
+    step4: 利用partition按中位数数组的中位数将输入数组划分。
+    step5: 如果mm=k,则返回A[p]。如果k<mm,则在低区递归调用selcet来找出第k小的元素，如果mm>k，则在高区递归
+    		查找第k-mm小的元素
+
+   	linear_selcet(A[left...right],k){
+   		n = right - left + 1 //数组总数
+   		if (n < 5){
+   			selection_sort(A);//元素小于5，直接一次性选择排序
+   			return A[left+k-1];
+   		}
+   		t = 0;//中位数数组的大小
+   		for(i = left ; i + 4 <= right; i+5){
+   			selcetion_sort(A[i...i+4]);//对每个5元数组进行选择排序
+   			M[t++] = A[i+2];//将每个有序五元组的中位数放入M[]中位数数组中
+   		}
+   		mm = linear_select(M[0..t-1], t/2)//中位数数组的中位数
+ 		for( i = left; i <= right ; ++i){
+ 			if (A[i] == mm){
+ 				swap(A[i],A[right])//将数组中的mm放到最末，作为partition的pivot
+ 				break;
+ 			}
+ 		}
+ 		p = partition(A[left, right]);
+ 		pivot_rank = p - left + 1;//得到pivot的位置
+
+ 		switch( camp(pivot_rank,k)){
+ 			case 0:return A[p];	//pivot和k正好相等
+ 			case 1: return linear_selcet(A[left..p-1],k);	//pivot>k
+ 			case -1: return linear_selcet(A[p+1..right], k-pivot_rank);	//pivot<k
+ 		}
+   	}
+
+
+	1.5 CLOSET-PAIRS
+	Q1(A[left..right]){
+		if(left+1 == right) // only 2 elements
+			return abs(A[left] - A[right]);
+		// partition using the median value
+
+		m = median(Aleft..right);
+
+		for(i = left; i <= right ; ++i){
+			if( A[i] == m){
+				swap(A[right],A[i]);
+				break;
+			}
+		}
+		p = partition (A[left..right]);
+		d1 = q1(A[left..p])
+		d2 = q1(A[p+1..right])
+		leftmax = A[left];
+		for (i = left + 1;i <= P; ++i)
+			leftmax = max(leftmax,A[i]);
+		rightmin = A[p+1];
+		for (i = p + 2; i <= right; ++i)
+			rightmin = min(rightmin, A[i]);
+		return min(d1,d2,abs(rightmax-rightmin));
+		running time:O(nlogn)
+	}
+
+	1.6 dc-majority(A,left, right){
+		n = right - left + 1;
+		if(n == 1){
+			return A[left];
+		}
+		mid = left + right /2
+		ml = dc-majority(A,left, mid);
+		mr = dc-majority(A, mid+1,right);
+		cl = 0;
+		cr = 0;
+		for( i = left;i<= right;i++){
+			if(A[i] == A[ml])
+				cl++;
+			if(A[i] == A[mr])
+				cr++;
+		}
+		if(cl>n/2)
+			return ml;
+		if(cr>n/2)
+			return mr;
+		return null;
+	}
+
+	A1 A0
+	12 34
+	56 78
+	B1 B0
+
+	1.7 DC_MULTIPLY(A[1..n],B[1..n],n){
+		if(n == 1)
+			return A[1]*B[1];
+		A0 = A[1..n/2]
+		A1 = A[n/2+1..n]
+		B0 = B[1..n/2]
+		B1 = B[n/2+1..n]
+		V1 = DC_MULTIPLY(A1,B1,n/2);
+		V2 = DC_MULTIPLY(A1,B0,n/2);
+		V3 = DC_MULTIPLY(A0,B1,n/2);
+		V4 = DC_MULTIPLY(A0,B0,n/2);
+		return V1*10`(n) + (V2+V3)*10`(n/2) + V4
+	}
+
+	2.1 Coin Change
+	coin-change(D[1...n],m){
+		A[0] = 0;
+		for(i = 1; i <=m; i++){
+			A[i] = infinity;
+			for(j=1; D[j]<=i; j++){
+				A[i] = min(A[i],A[i-D[j]]+1)
+			}
+		}
+		return A[m];
+	}
+	running time :O(m*n)
+
+	2.2
+	limited-coin-change(n,d[1..k],m[1..k]){//d[硬币面额],m[硬币数量]
+		for(i=0;i <= n;i++){
+			A[i][0] = infinity;
+		}
+		for(j=0;j <= n;j++){
+			A[0][i] = 0;
+		}
+
+		for(i=1;i <= n;i++){
+			for(j=1;j <= k;j++){
+				A[i][j] = infinity;
+				for(x=0;x <=m [j];x++){
+					if( i-x*d[j]>0){
+						A[i][j] = min(A[i][j],x + A[i-x*d[j][j-1])
+					}
+				}
+			}
+		}
+		return A[n][k];
+	}
+
+	2.3
+	longest-weighted-simple-path(V,E,W,s,t){
+		L = topological(V,E)
+		for (k = 1; k<=n; k++){
+			d[k] = infinity;
+			next[k] = NULL;
+		}
+		for (k = n; k >= 1; k--){
+			if(k == t)
+				d[k] = 0;
+			else 
+				for each x in Adj[k]{
+					if(d[k] < d[k-1]+w[k,x]){
+						d[k] = w[k,x] + d[x];
+						next[k] = x;						
+				}
+			}
+			if(k == s){
+				for(i = s; i!=t; i=next[i])
+					output[i];
+				return;
+			}
+		}
+	}
+	2.4 Matrix
+	for(i = 1; i <=n; i++){
+		c[i][i] = 0;
+		for(l = 2; l <=n; l++){
+			for(i=1; i <= n-l+1; i++){
+				j = i + l - 1;
+				c[i][j] = infinity;
+				for(k = i; k <=j;k++){
+					v = c[i][k] + c[k+1][j] + d[i-1]*d[k]*d[j]
+					if(v < c[i][j])
+						c[i][j] = v;
+						s[i][j] = k'
+				}
+			}
+		}
+		return m and s;
+	}
+
+	2.5
+	LCS
+	LCS(x[1..m],y[1..n]){
+		for(i = 0; i <=m;i++){
+			L[i][0] = 0;
+		}
+		for(j = 0; j <=n; j++){
+			L[0][j] = 0;
+		}
+		for(i = 1; i <= m;i++){
+			for(j = 1; j <=n ; j++){
+				if(x[i] = y[j]){
+					L[i][j] = L[i-1][y-1]+1;
+					B[i][j] = "\";
+				}
+				else if L[i][j-1] > L[i-1][j]
+					L[i][j] = L[i][j-1];
+					B[i][j] = "|";
+				else 	
+					L[i][j] = L[i-1][j];
+					B[i][j] = "--";
+			}
+		}
+		return L[m][n] and B;
+	}
+
+	3.1 FORD-FULKERSON(G,s,t){
+		for each edge (u,v) in G.E//初始化每条边的流量（不是容量）
+			(u.v).f = 0
+		while there exists a path p from s to t in the residual network Gf//剩余网络中查找增广路径
+			cf(p) = min{cf(u,v):(u,v) is in p}  
+			for each edge (u,v) in p 
+				if(u,v) in E
+					(u,v).f = (u,v).f + cf(p)
+				else (v,u).f = (v,u).f - cf(p)
+	}
+
+	3.2 maximum flow to minimum cut
+	INPUT:a flow network N = (V,E,c,s,t) and a maximum flow f of N;
+	OUTPUT: a minimum cut of N.
+	q3(V,E,c,s,t,f){
+		for each(a,b) in E{
+			if(c[a][b] == f[a][b])
+				E = E - {(a,b)};
+			E = E + {(b,a)};
+		}
+		S = reachable(V,E,s);
+		T = V - S;
+	}
+
+	3.3 minimum cut to maximum flow
+	INPUT: a flow network N = (V,E,c,s,t) and a minimum cut of N (S,T),T=V-S 
+	OUTPUT: a maximum flow f o f N;
+	cut_to_flow(V,E,c,s,t){
+		for each (a,b) a in S,b in T{
+			|fin| += f(a,b) 
+		}
+		for each (x,y) x in T,y in S{
+			|fout| = f(x,y)
+		}
+		f = |fin| - |fout| //|f| <= c(s,t)
+		return f;
+	}
+
+	4.1
+	check_2colorable_aux(V,E,color[],s){
+		Queue queue;
+		queue.enqueue(s);
+		color[s] = 1;
+		while(!queue.isempty()){
+			v =queue.dequeue();
+			for each w in Adj[v]
+				if (color[w] == -1){
+					color[w] = 1 - color[v];
+					queue.enqueue(w);
+				}
+				else if (color[w] == color[v])
+					return false;
+		}
+		return true;
+	}
+
+	boolean check_2colorable(V,E){
+		int n = |V|;
+		int color[n];
+		for(int i = 1; i <= n; i++){
+			color[i] = -1;
+		}
+		for(int i = 1; i <= n; i++){
+			if(color[i]==-1){
+				if(check_2colorable_aux(V,E,color[],i) == false)
+					return false;
+			}
+			return true;
+		}
+	}
+
+
+
+	4.2
+	6 coloring
+	input: an undirected graph (V , E)
+	output: yes iff there is a function c:V →{1,2,3,4,5,6} such that if (x,y)∈E then c(x)=c(y)
+	verify-6-color(V,E,C){
+		for ( int i = 0; i < |V|; i++){
+			if C[i] not in {1,2,3,4,5,6}
+				return false;
+		}
+		for (each edge(a,b) in E){
+			if C[a] = C[b]
+				return false
+		}
+		return true;
+	}
+	running time:O(|V|+|E|)
+
+	b. reduction algorithm
+	f(V,E){
+		V' = V + {a};
+		for each v in V
+			E += {(v,a)};
+		return (V',E');
+	}
+	running time O(|V|+|E|)
+
+	c. (V,E) in 5-coloring => (V',E') in 6-coloring
+	If(V,E) can be colored using color 1,2,3,4,5,then we color the vertices of V' 
+	similarly and vertex a with color 6.Each edge still has endpoins with different colors.
+	so (V',E') is 5 colorable.
+
+	d.(V',E') in 6-coloring can be colored =>(V,E) in 5-coloring
+	If(V',E') can be colored using color 1,2,3,4,5,6 ,each edge's vertices has different
+	colors.color[a] must be different from that of every other vertex;call this color 6,then
+	the remaining vertices must be colored using only 1,2,3,4,5.In other words,(V,E) is 5-colorable
+
+
+
+
+
+
+
