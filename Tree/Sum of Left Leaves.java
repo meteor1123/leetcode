@@ -57,7 +57,7 @@ class Solution {
         dfs(root.left);
         if (root.left != null && root.left.left == null && root.left.right == null) {
             res += root.left.val; // 1. don't return in this step, still need to recursive compute right children
-            											// 2. we actually add the value of left leaf in the parent level;
+            			// 2. we actually add the value of left leaf in the parent level;
         }
         dfs(root.right);
     }

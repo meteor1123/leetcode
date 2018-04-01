@@ -101,7 +101,7 @@
 				            return;
 				        }
 				        for (int i = 0; i < nums.length; i++) {
-				        	//if (i != 0 && nums[i] == nums[i - 1] && nums[i - 1] == false) Permutations II
+				        	//if (i != 0 && nums[i] == nums[i - 1] && visited[i - 1] == false) Permutations II
 				            if (visited[i] == false) {
 				                visited[i] = true;
 				                item.add(nums[i]);
